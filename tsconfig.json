@@ -18,7 +18,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": "./src", // 将 baseUrl 设置为 src 文件夹
+    "paths": {
+      "@/*": ["./*"] // @/ 会映射到 src/ 下的所有文件
+    },
   },
   "include": [
     "src"
