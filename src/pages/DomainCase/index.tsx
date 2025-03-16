@@ -6,12 +6,13 @@ const DomainCase = () => {
         <div>
             <CustomEditor
                 data={mockData?.request}
+                rootNode='eventPayload'
                 assertChecked={true}
                 editValue={true}
                 isAllAssert={true}
-                rootNode='eventPayload'
-                onChange={(vals)=>{
-                    console.log('vals',vals);
+                isAllCheckbox={true}
+                onChange={(vals) => {
+                    console.log('vals', vals);
                 }}
             />
         </div>

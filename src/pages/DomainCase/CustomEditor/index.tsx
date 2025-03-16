@@ -21,6 +21,7 @@ interface IProps {
     assertChecked?: boolean;
     editValue?: boolean;
     isAllAssert?: boolean;
+    isAllCheckbox?: boolean;
     interfaceObj?: string;
     onChange: (...set: any) => void;
     showNode?: any;
@@ -33,6 +34,7 @@ interface IProps {
  * @param assertChecked     是否展示Assert框（默认不展示）
  * @param editValue         是否展示编辑框（默认不展示）
  * @param isAllAssert       是否展示全选（默认不展示）
+ * @param isAllCheckbox     是否全选（默认不全选）
  * @param noShowAssert      是否展示assert文字（默认展示）
  * @param interfaceObj      根据interfaceOb处理
  * @param showNode          指定节点的value值作为数据源
@@ -50,6 +52,7 @@ const CustomEditor = (props: IProps) => {
         assertChecked = false,
         editValue = false,
         isAllAssert = false,
+        isAllCheckbox = false,
         onChange,
         interfaceObj,
         showNode,
@@ -206,19 +209,21 @@ const CustomEditor = (props: IProps) => {
         }
     };
 
-    const [isAll, setIsAll] = useState(true)
-    const [oneTimeSwitch, setOneTimeSwitch] = useState(true)
+    const [isFirstAll, setIsFirstAll] = useState(true)
     useEffect(() => {
-        if (rootNode === 'response' && renderData) {
-            if (assertKeys?.length === 0) {
-                // if (propsData?.response?.assertKeys?.length === 0) {
-                if (isAll && oneTimeSwitch) {
-                    selectAll(true)
-                    setIsAll(false)
-                    setOneTimeSwitch(false)
-                }
-            }
+        //Assert全选条件
+        const conditions = [
+            isFirstAll,//首次执行，避免数据更新重复渲染
+            isAllCheckbox,
+            renderData,
+            assertKeys?.length === 0,
+         
+        ];
+        if (conditions.every(condition => condition)) {
+            selectAll(true);
+            setIsFirstAll(false)
         }
+
     }, [rootNode, renderData]);
 
     useEffect(() => {
@@ -232,11 +237,15 @@ const CustomEditor = (props: IProps) => {
 
     /**配置特殊校验
      * 不与原逻辑耦合（只需修改此块）
+     * （代码健壮性预留拓展）
+     * Map 的特性：
+     * Map 是一种键值对数据结构，它的键是唯一的。
+     * 如果多次使用相同的键（item.keyPath）调用 Map.set()，后一次的值会覆盖前一次的值。
      */
     const onConfigSpecialVerif = (vals: any) => {
         const specialAssertConfigs = subData?.[rootNode]?.specialAssertConfigs ?? []
 
-        //去重，相同的keyPath，保留最新项
+        //根据keyPath去重，保留最新项 
         const resultMap = new Map();
         [...specialAssertConfigs, vals].forEach((item) => {
             resultMap.set(item.keyPath, item);

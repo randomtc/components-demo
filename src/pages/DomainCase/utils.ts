@@ -111,29 +111,6 @@ export const deepConvertEmptyArraysToString = (data: any): any => {
     return data;
 };
 
-export function compareVersions(versionA: string, versionB: string) {
-    // 处理后缀，只取 '-' 前面的部分
-    const baseVersionA = versionA.split('-')[0];
-    const baseVersionB = versionB.split('-')[0];
-    const partsA = baseVersionA.split('.').map(Number);
-    const partsB = baseVersionB.split('.').map(Number);
-
-    const maxLength = Math.max(partsA.length, partsB.length);
-
-    // 比较版本号
-    for (let i = 0; i < maxLength; i++) {
-        const numA = partsA[i] || 0;
-        const numB = partsB[i] || 0;
-
-        if (numA > numB) {
-            return 'new';
-        } else if (numA < numB) {
-            return 'old';
-        }
-    }
-
-    return 'old'; // versionA 和 versionB 相等
-}
 /**JSONPath（$[0].parameter.order）转为链式结构 */
 export const convertFromJsonPath = (arr: string[], selectKeyRootNode: any, rootNode: any) => {
     if (!arr) return [];
