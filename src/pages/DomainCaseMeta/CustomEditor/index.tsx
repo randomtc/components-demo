@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { Tree, Checkbox } from 'antd';
 import EditValue from './EditValue';

@@ -89,7 +89,7 @@ const ConfigSpecialVerif = (props: any) => {
                 title='配置特殊校验'
                 width={650}
                 style={{
-                    filter: 'invert(0.85) hue-rotate(170deg)'
+                    // filter: 'invert(0.85) hue-rotate(170deg)'
                 }}
                 open={open}
                 onCancel={() => setOpen(false)}

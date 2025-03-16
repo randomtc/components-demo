@@ -1,10 +1,10 @@
-/* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from '@alipay/bigfish/react';
-import { Checkbox, Col, Collapse, Radio, Row, Tabs } from '@alipay/bigfish/antd';
+// @ts-nocheck
+import React, { useEffect, useState } from 'react';
+import { Checkbox, Col, Collapse, Radio, Row, Tabs } from 'antd';
 import CustomEditor from '../CustomEditor';
 import styles from './index.less';
 import { modifySubData } from '../utils';
-import { CheckCircleOutlined } from '@alipay/bigfish/icons';
+import { CheckCircleOutlined } from 'icons';
 import DBCheckContent from '../DBCheckContent';
 const { Panel } = Collapse;
 const DrawerTab = (props: any) => {
@@ -59,7 +59,7 @@ const DrawerTab = (props: any) => {
 
     return (
         <>
-            {!(searchId x === index && loading) && (
+            {!(searchIdx === index && loading) && (
             <Tabs
                 defaultActiveKey="0"
                 onChange={(key: string | number) => {
