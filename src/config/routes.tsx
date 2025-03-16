@@ -28,6 +28,19 @@ export const routers: RouterType[] = [
 
         ]
     },
+    { path: 'domaincase', component: lazy(() => import('@/pages/DomainCase')) },
+    {
+        path: 'domaincase',
+        children: [
+            {
+                path: 'children',
+                label: '员工管理',
+                icon: 'icon-staffmanage',
+                component: lazy(() => import('@/pages/Test/TestChildren'))
+            },
+
+        ]
+    },
 
     // {
     //     path: '/401',
