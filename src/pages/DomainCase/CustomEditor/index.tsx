@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { Tree, Checkbox } from 'antd';
-import EditValue from './EditValue';
 import {
     findAllAssertKeys,
     modifySubData,
@@ -11,6 +10,7 @@ import {
     convertToDesiredFormat,
 } from '../utils';
 import ConfigSpecialVerif from './ConfigSpecialVerif';
+import EditValue from './EditValue';
 interface CustomEditorType {
     ConvertToAntdTreeDataFunction: (data: any, nodeKey?: string, depth?: number) => any;
     BuildTreeNode: (el: object, key: any, isBasicType?: boolean) => void;
@@ -18,8 +18,8 @@ interface CustomEditorType {
 interface IProps {
     data: any;
     rootNode: string;
-    assertChecked?: boolean;
-    editValue?: boolean;
+    showAssertChecked?: boolean;
+    showEditValue?: boolean;
     isAllAssert?: boolean;
     isAllCheckbox?: boolean;
     interfaceObj?: string;
@@ -28,18 +28,19 @@ interface IProps {
     noShowAssert?: boolean;
     selectKey?: string
     selectKeyRootNode?: string
-    noShowConfigSpecialVerif?: boolean
+    showConfigSpecialVerif?: boolean
 }
 /**
- * @param assertChecked     是否展示Assert框（默认不展示）
- * @param editValue         是否展示编辑框（默认不展示）
- * @param isAllAssert       是否展示全选（默认不展示）
- * @param isAllCheckbox     是否全选（默认不全选）
- * @param noShowAssert      是否展示assert文字（默认展示）
- * @param interfaceObj      根据interfaceOb处理
- * @param showNode          指定节点的value值作为数据源
- * @param selectKey         储存选择节点的key
- * @param selectKeyRootNode 节点key值的前缀值
+ * @param showAssertChecked       是否展示Assert框（默认不展示）
+ * @param showEditValue               是否展示编辑框（默认不展示）
+ * @param isAllAssert             是否展示全选（默认不展示）
+ * @param showConfigSpecialVerif  是否展示特殊校验规则（默认不展示）
+ * @param isAllCheckbox           是否全选（默认不全选）
+ * @param noShowAssert            是否展示assert文字（默认展示）
+ * @param interfaceObj            根据interfaceOb处理
+ * @param showNode                指定节点的value值作为数据源
+ * @param selectKey               储存选择节点的key
+ * @param selectKeyRootNode       节点key值的前缀值
  * @returns
  */
 
@@ -49,15 +50,15 @@ const CustomEditor = (props: IProps) => {
     const {
         data: propsData,
         rootNode,
-        assertChecked = false,
-        editValue = false,
+        showAssertChecked = false,
+        showEditValue = false,
         isAllAssert = false,
         isAllCheckbox = false,
         onChange,
         interfaceObj,
         showNode,
         noShowAssert,
-        noShowConfigSpecialVerif = false,
+        showConfigSpecialVerif = false,
         selectKey,
         selectKeyRootNode
     } = props;
@@ -217,7 +218,7 @@ const CustomEditor = (props: IProps) => {
             isAllCheckbox,
             renderData,
             assertKeys?.length === 0,
-         
+
         ];
         if (conditions.every(condition => condition)) {
             selectAll(true);
@@ -228,7 +229,7 @@ const CustomEditor = (props: IProps) => {
 
     useEffect(() => {
         // console.log('assertKeys', assertKeys);
-        if (assertChecked) {
+        if (showAssertChecked) {
             addAssertKeys(assertKeys);
         }
 
@@ -274,7 +275,7 @@ const CustomEditor = (props: IProps) => {
                 <div style={{ display: 'flex' }}>
                     <span>{key}：</span>
                     <span>
-                        {editValue ? (
+                        {showEditValue ? (
                             <EditValue value={String(el)} onEdit={(val) => onEdit(itemKey, val)} />
                         ) : (
                             String(el)
@@ -282,20 +283,18 @@ const CustomEditor = (props: IProps) => {
                     </span>
 
                     {/* 配置特殊校验 */}
-                    <span style={{ display: assertChecked ? '' : 'none', margin: '0 2px' }}>
-                        <span style={{ display: noShowConfigSpecialVerif ? 'none' : '' }}>
-                            <ConfigSpecialVerif
-                                keyPath={convertToDesiredFormat([itemKey])?.[0]}
-                                value={String(el)}
-                                specialAssertConfigs={subData?.[rootNode]?.specialAssertConfigs ?? []}
-                                onConfirm={(vals: any) => {
-                                    onConfigSpecialVerif(vals)
-                                }}
-                            />
-                        </span>
+                    <span style={{ display: showConfigSpecialVerif ? '' : 'none',marginLeft: 5 }}>
+                        <ConfigSpecialVerif
+                            keyPath={convertToDesiredFormat([itemKey])?.[0]}
+                            value={String(el)}
+                            specialAssertConfigs={subData?.[rootNode]?.specialAssertConfigs ?? []}
+                            onConfirm={(vals: any) => {
+                                onConfigSpecialVerif(vals)
+                            }}
+                        />
                     </span>
 
-                    <span style={{ marginLeft: 5, display: assertChecked ? '' : 'none' }}>
+                    <span style={{ marginLeft: 5, display: showAssertChecked ? '' : 'none' }}>
                         <Checkbox
                             checked={assertKeys?.includes(itemKey)}
                             onChange={(e) => {
@@ -314,7 +313,7 @@ const CustomEditor = (props: IProps) => {
                         //  style={{ marginLeft: 15, display: isAllAssert ? '' : 'none' }}
                         style={{
                             marginLeft: 15,
-                            display: ['request', 'response', 'eventPayload', 'sofaContext', 'headers'].includes(itemKey) && isAllAssert ? '' : 'none',
+                            display: ['request', 'response', 'eventPayload', 'sofaContext', 'headers'].includes(itemKey) && isAllAssert && showAssertChecked ? '' : 'none',
                         }}
                     >
                         <Checkbox
@@ -368,14 +367,20 @@ const CustomEditor = (props: IProps) => {
 
     return (
         <div style={{ width: '100%', overflowX: 'auto' }}>
-            <Tree
-                treeData={convertToAntdTreeData(renderData)}
-                // virtual
-                onSelect={(a, b) => {
-                    // console.log('a', a);
-                    // console.log('b', b);
-                }}
-            />
+            {renderData && (
+                <Tree
+
+                    defaultExpandedKeys={allAssert}
+                    treeData={convertToAntdTreeData(renderData)}
+                    // virtual
+
+                    onSelect={(a, b) => {
+                        // console.log('a', a);
+                        // console.log('b', b);
+                    }}
+                />
+            )}
+
         </div>
     );
 };
