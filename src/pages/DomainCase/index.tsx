@@ -68,11 +68,6 @@ const DomainCase = () => {
 
                 </div>
             </div>
-
-
-
-
-
         </div>
     )
 }
