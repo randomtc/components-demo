@@ -13,7 +13,7 @@ export type RouterType = {
     component?: React.LazyExoticComponent<any>
 }
 export const routers: RouterType[] = [
-    { path: '', element: <Navigate to="home" /> },
+    { path: '', element: <Navigate to="domaincase" /> },
     { path: 'home', component: lazy(() => import('@/pages/Home')) },
     { path: 'test', component: lazy(() => import('@/pages/Test')) },
     {
@@ -29,18 +29,18 @@ export const routers: RouterType[] = [
         ]
     },
     { path: 'domaincase', component: lazy(() => import('@/pages/DomainCase')) },
-    {
-        path: 'domaincase',
-        children: [
-            {
-                path: 'children',
-                label: '员工管理',
-                icon: 'icon-staffmanage',
-                component: lazy(() => import('@/pages/Test/TestChildren'))
-            },
+    // {
+    //     path: 'domaincase',
+    //     children: [
+    //         {
+    //             path: 'children',
+    //             label: '员工管理',
+    //             icon: 'icon-staffmanage',
+    //             component: lazy(() => import('@/pages/Test/TestChildren'))
+    //         },
 
-        ]
-    },
+    //     ]
+    // },
 
     // {
     //     path: '/401',

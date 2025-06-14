@@ -22,6 +22,8 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
+
+  // npm run deploy 一键部署
   "scripts": {
     "start": "craco start",
     "predeploy": "npm run build",
