@@ -19,9 +19,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src", // 将 baseUrl 设置为 src 文件夹
+    "baseUrl": "src", // 将 baseUrl 设置为 src 文件夹
     "paths": {
-      "@/*": ["./*"] // @/ 会映射到 src/ 下的所有文件
+      "@/*": ["*"] // @/ 会映射到 src/ 下的所有文件
     },
   },
   "include": [

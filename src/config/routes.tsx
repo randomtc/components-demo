@@ -15,6 +15,8 @@ export type RouterType = {
 export const routers: RouterType[] = [
     { path: '', element: <Navigate to="home" /> },
     { path: 'home', component: lazy(() => import('@/pages/Home')) },
+    { path: 'domaincase', component: lazy(() => import('@/pages/DomainCase')) },
+    { path: 'componentdemo', component: lazy(() => import('@/pages/ComponentDemo')) },
     { path: 'test', component: lazy(() => import('@/pages/Test')) },
     {
         path: 'test',
@@ -28,7 +30,7 @@ export const routers: RouterType[] = [
 
         ]
     },
-    { path: 'domaincase', component: lazy(() => import('@/pages/DomainCase')) },
+
     // {
     //     path: 'domaincase',
     //     children: [
