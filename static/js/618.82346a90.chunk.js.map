@@ -1,1 +1,0 @@
-{"version":3,"file":"static/js/618.82346a90.chunk.js","mappings":"oKAEA,MAMA,EANaA,KAETC,EAAAA,EAAAA,KAAA,OAAAC,SAAK,Q","sources":["pages/Test/index.tsx"],"sourcesContent":["import React from 'react'\n\nconst Test = () => {\n  return (\n    <div>Test</div>\n  )\n}\n\nexport default Test"],"names":["Test","_jsx","children"],"sourceRoot":""}
