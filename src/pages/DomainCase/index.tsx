@@ -1,7 +1,7 @@
+import CustomEditor from './CustomEditor';
 import React, { useState } from 'react';
 import { Card, Checkbox } from 'antd';
-import CustomEditor from './CustomEditor';
-import { mockData } from './mock'
+import { mockData } from './mock';
 const DomainCase = () => {
     const [selectedOptions, setSelectedOptions] = useState<string[]>([
         'showAssertChecked', 'showEditValue', 'showConfigSpecialVerif',
