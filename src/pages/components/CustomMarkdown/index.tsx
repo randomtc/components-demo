@@ -7,16 +7,16 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import './markdown.css';
 export const thinkToBlockquote = (input: string) => {
-    if (!input.includes('<think>') && !input.includes('</think>')) {
-      return input; 
-    }
-    // 如果包含标签，执行替换操作
-    const output = input
-      .replace(/<think>/g, '<blockquote>') // 替换 <think> 为 <blockquote>
-      .replace(/<\/think>/g, '</blockquote>'); // 替换 </think> 为 </blockquote>
-  
-    return output; 
-  };
+  if (!input.includes('<think>') && !input.includes('</think>')) {
+    return input;
+  }
+  // 如果包含标签，执行替换操作
+  const output = input
+    .replace(/<think>/g, '<blockquote>') // 替换 <think> 为 <blockquote>
+    .replace(/<\/think>/g, '</blockquote>'); // 替换 </think> 为 </blockquote>
+
+  return output;
+};
 const CustomMarkdown = ({ content }: any) => {
   const memoizedContent = useMemo(() => thinkToBlockquote(content), [content]);
 
@@ -24,9 +24,8 @@ const CustomMarkdown = ({ content }: any) => {
   const renderCodeBlock = useCallback(
     ({ inline, className, children, ...props }: any) => {
       const match = /language-(\w+)/.exec(className || '');
-      return (
-        !inline &&
-        match && (
+      if (!inline && match) {
+        return (
           <SyntaxHighlighter
             style={materialDark}
             language={match[1]}
@@ -35,11 +34,14 @@ const CustomMarkdown = ({ content }: any) => {
           >
             {String(children).replace(/\n$/, '')}
           </SyntaxHighlighter>
-        )
-      );
+        );
+      }
+      // inline 或没有匹配的语言时，渲染普通 <code>
+      return <code className={className} {...props}>{children}</code>;
     },
-    [], // 没有依赖项，因为 `materialDark` 和 `SyntaxHighlighter` 不会改变
+    [],
   );
+
 
   return (
     <div className="markdown-body">
