@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkcomponents_demo=self.webpackChunkcomponents_demo||[]).push([[375],{8375:(e,s,n)=>{n.r(s),n.d(s,{default:()=>a});var c=n(5492),d=(n(5043),n(4315)),o=n(579);const a=()=>(0,o.jsx)("div",{children:(0,o.jsx)(d.N_,{to:"/domaincase",children:(0,o.jsx)(c.Ay,{children:"domaincase"})})})}}]);
+//# sourceMappingURL=375.ec67924d.chunk.js.map
