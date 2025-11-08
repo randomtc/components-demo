@@ -17,6 +17,10 @@ const Home = () => {
         <Link to='/componentdemo'>
           <Button>componentdemo</Button>
         </Link>
+
+        <Link to='/tabledemo'>
+          <Button>tabledemo</Button>
+        </Link>
       </Space>
     </div>
   );

@@ -11,8 +11,7 @@ const DomainCase = () => {
     const handleCheckboxChange = (checkedValues: any[]) => {
         setSelectedOptions(checkedValues);
     };
-    const [code, setCode] = useState<any>(mockData)
-    // console.log("🚀 ~ DomainCase ~ code:", code)
+    const [code, setCode] = useState<any>(mockData?.request)
     return (
         <div style={{ padding: 15 }}>
 
@@ -21,20 +20,20 @@ const DomainCase = () => {
                     <h3>数据源</h3>
                     <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', backgroundColor: '#f5f5f5', }}>
                         <code>
-                            {JSON.stringify(code?.editData?.data, null, 2)}
+                            {JSON.stringify(code?.eventPayload?.yamlData, null, 2)}
                         </code>
                     </pre>
 
                     <h3>选择节点</h3>
                     <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', backgroundColor: '#f5f5f5', }}>
                         <code>
-                            {JSON.stringify(code?.editData?.assertKeys ?? `{}`, null, 2)}
+                            {JSON.stringify(code?.eventPayload?.assertKeys ?? `{}`, null, 2)}
                         </code>
                     </pre>
                     <h3>校验规则</h3>
                     <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', backgroundColor: '#f5f5f5', }}>
                         <code>
-                            {JSON.stringify(code?.editData?.specialAssertConfigs, null, 2)}
+                            {JSON.stringify(code?.eventPayload?.specialAssertConfigs, null, 2)}
                         </code>
                     </pre>
                 </div>
@@ -42,6 +41,7 @@ const DomainCase = () => {
                 <div>
                     <div style={{ marginBottom: 20 }}>
                         <Checkbox.Group
+
                             options={[
                                 { label: 'Assert', value: 'showAssertChecked' },
                                 { label: '编辑', value: 'showEditValue' },
@@ -53,23 +53,13 @@ const DomainCase = () => {
                     </div>
 
                     <CustomEditor
-                        data={{
-                            editData:
-                            {
-                                data: code,
-                                assertKeys: [
-                                    "$.data.request.id",
-                                    "$.data.request.paymentMethodTypes[2].bizType"
-                                ]
-                            }
-                        }}
-                        rootNode='editData'
-                       
+                        data={mockData?.request}
+                        rootNode='eventPayload'
                         showAssertChecked={selectedOptions.includes('showAssertChecked')}
                         showEditValue={selectedOptions.includes('showEditValue')}
                         showConfigSpecialVerif={selectedOptions.includes('showConfigSpecialVerif')}
                         isAllAssert={true}
-                        isAllCheckbox={false}
+                        isAllCheckbox={true}
                         onChange={(vals) => {
                             console.log("🚀 ~ DomainCase ~ vals:", vals)
                             setCode(vals)

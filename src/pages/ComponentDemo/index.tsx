@@ -2,9 +2,10 @@ import React from 'react'
 
 import { markdownText } from './mock'
 import { Card, Collapse } from 'antd'
-import CopyText from '../components/CopyText'
-import CustomMarkdown from '../components/CustomMarkdown'
-import TextEllipsis from '../components/TextEllipsis'
+import CopyText from '../../components/CopyText'
+import CustomMarkdown from '../../components/CustomMarkdown'
+import TextEllipsis from '../../components/TextEllipsis'
+import TableDemo from '../TableDemo'
 
 const ComponentDemo = () => {
     return (
@@ -27,7 +28,9 @@ const ComponentDemo = () => {
                 label: 'CustomMarkdown',
                 children: <CustomMarkdown content={markdownText} />
                 ,
-            },]} 
+            },
+     
+            ]}
             />
 
 

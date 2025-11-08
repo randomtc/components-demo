@@ -155,6 +155,7 @@ const ConfigSpecialVerif = (props: any) => {
                                                         formChange()
                                                     }}
                                                     showSearch
+                                                    dropdownStyle={{ filter: 'invert(0.85) hue-rotate(170deg)', boxShadow: 'none' }}
                                                     placeholder="请选择"
                                                     options={Object.entries(RULE_TYPE).map((item) => ({
                                                         value: item[0],

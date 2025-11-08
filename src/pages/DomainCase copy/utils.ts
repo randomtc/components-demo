@@ -1,29 +1,11 @@
-/**
- * 判断字符串是否为合法 JSON 格式
- */
-export const isValidJson = (str: unknown): boolean => {
-    if (typeof str !== 'string') return false;
-    try {
-        JSON.parse(str);
-        return true;
-    } catch {
-        return false;
-    }
-};
-
-/**
- * 根据路径（如 'a.1.b'）修改对象中的对应值
- * @param obj 源对象
- * @param path 点分路径字符串
- * @param value 新值
- */
-export const updateValueByPath = (obj: any, path: string, value: string | string[] | boolean) => {
+/**根据‘xxx.1.yy’来修改对应数据 */
+export const modifySubData = (obj: any, path: string, value: string | string[] | boolean) => {
     if (!obj || !path || value === void 0) return;
     // if (!obj || !path || !value) return;
-    const newObj = JSON.parse(JSON.stringify(obj));
+    const modifiedObj = JSON.parse(JSON.stringify(obj));
 
     const keys = path.split('.');
-    let current = newObj;
+    let current = modifiedObj;
     for (let i = 0; i < keys.length - 1; i++) {
         const key = isNaN(Number(keys[i])) ? keys[i] : Number(keys[i]);
         if (!current[key]) {
@@ -37,8 +19,16 @@ export const updateValueByPath = (obj: any, path: string, value: string | string
         ? keys[keys.length - 1]
         : Number(keys[keys.length - 1]);
     current[finalKey!] = value;
+    return modifiedObj;
+};
 
-    return newObj;
+const isJSON = (str: any) => {
+    try {
+        JSON.parse(str);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 
 
@@ -46,7 +36,7 @@ export const updateValueByPath = (obj: any, path: string, value: string | string
 export const findAllAssertKeys = (fData: any) => {
     // 收集所有满足条件的键
     try {
-
+        const newData = JSON.parse(JSON.stringify(fData));
         const keys: any[] = [];
         const collectKeys = (data: any, prefix = '') => {
             if (Array.isArray(data)) {
@@ -58,8 +48,7 @@ export const findAllAssertKeys = (fData: any) => {
                         keys.push(key);
                     }
                 });
-            }
-            if (data !== null && typeof data === 'object') {
+            } else if (data !== null && typeof data === 'object') {
                 Object.keys(data).forEach((key) => {
                     const el = data[key];
                     const fullKey = prefix ? `${prefix}.${key}` : key;
@@ -72,7 +61,7 @@ export const findAllAssertKeys = (fData: any) => {
             }
         };
 
-        collectKeys(fData);
+        collectKeys(newData);
 
         return keys;
     } catch (error) {
@@ -84,8 +73,7 @@ export const findAllAssertKeys = (fData: any) => {
 export const deepConvertEmptyArraysToString = (data: any): any => {
     if (Array.isArray(data)) {
         return data.length === 0 ? '[]' : data.map(deepConvertEmptyArraysToString);
-    }
-    if (data !== null && typeof data === 'object') {
+    } else if (data !== null && typeof data === 'object') {
         return Object.fromEntries(
             Object.entries(data).map(([key, value]) => [key, deepConvertEmptyArraysToString(value)]),
         );
@@ -93,36 +81,31 @@ export const deepConvertEmptyArraysToString = (data: any): any => {
     return data;
 };
 
-/**
- * JSONPath 转 链式路径
- * @example
- * convertJsonPathToChainPath(['$[0].a.b'], 'root')
- * => ['root.0.a.b']
- */
-export const convertJsonPathToChainPath = (paths: string[], rootNode: string): string[] => {
-    if (!Array.isArray(paths)) return [];
-
-    return paths.map((path) => {
-        let res = path.replace(/^\$/, ''); // 去掉 $
-        res = res.replace(/\[(\d+)\]/g, '.$1'); // [0] -> .0
-        if (res.startsWith('.')) res = res.slice(1);
-        return `${rootNode}.${res}`;
+/**JSONPath（$[0].parameter.order）转为链式结构 */
+export const convertFromJsonPath = (arr: string[], rootNode: any) => {
+    if (!arr) return [];
+    return arr.map((item) => {
+        // 去掉开头的 '$'
+        let modifiedItem = item.replace(/^\$/, '');
+        // 将 '[数字]' 替换为 '.数字'
+        modifiedItem = modifiedItem.replace(/\[(\d+)\]/g, '.$1');
+        // 如果开头是 '.' 或者 '', 去掉它
+        if (modifiedItem.startsWith('.')) {
+            modifiedItem = modifiedItem.slice(1);
+        }
+        return `${rootNode}.${modifiedItem}`;
     });
 };
 
-
-
-/**
- * 链式路径 转 JSONPath
- * @example
- * convertChainPathToJsonPath(['root.0.a.b'])
- * => ['$[0].a.b']
- */
-export const convertChainPathToJsonPath = (paths: string[]): string[] => {
-    if (!Array.isArray(paths)) return [];
-    return paths.map((path) => {
-        const trimmed = path.replace(/^[^.]+/, ''); // 去掉 root
-        const res = trimmed.replace(/\.(\d+)/g, '[$1]'); // .0 -> [0]
-        return `$${res}`;
+/**将链式转为JSONPath（$[0].parameter.order）结构 */
+export const convertToDesiredFormat = (arr: string[]) => {
+    return arr.map((item) => {
+        // 删除第一个点（.）之前的内容
+        const modifiedItem = item.replace(/^[^\.]+/, '');
+        //将数字以及前边的点（.0）替换为（[0]）
+        const modified = modifiedItem.replace(/\.(\d+)/g, '[$1]');
+        // 在字符串开始处添加 '$'
+        // return `$${modified}`;
+        return `$${modified}`;
     });
 };

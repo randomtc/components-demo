@@ -11,7 +11,7 @@ const DomainCase = () => {
     const handleCheckboxChange = (checkedValues: any[]) => {
         setSelectedOptions(checkedValues);
     };
-    const [code, setCode] = useState<any>(mockData)
+    const [code, setCode] = useState<any>(mockData?.request)
     // console.log("🚀 ~ DomainCase ~ code:", code)
     return (
         <div style={{ padding: 15 }}>
@@ -56,7 +56,7 @@ const DomainCase = () => {
                         data={{
                             editData:
                             {
-                                data: code,
+                                data: mockData,
                                 assertKeys: [
                                     "$.data.request.id",
                                     "$.data.request.paymentMethodTypes[2].bizType"
@@ -64,12 +64,11 @@ const DomainCase = () => {
                             }
                         }}
                         rootNode='editData'
-                       
                         showAssertChecked={selectedOptions.includes('showAssertChecked')}
                         showEditValue={selectedOptions.includes('showEditValue')}
                         showConfigSpecialVerif={selectedOptions.includes('showConfigSpecialVerif')}
                         isAllAssert={true}
-                        isAllCheckbox={false}
+                        // isAllCheckbox={true}
                         onChange={(vals) => {
                             console.log("🚀 ~ DomainCase ~ vals:", vals)
                             setCode(vals)

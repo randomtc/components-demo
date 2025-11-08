@@ -5,10 +5,10 @@ import { Checkbox, Tree } from 'antd';
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
     findAllAssertKeys,
-    updateValueByPath,
+    modifySubData,
     deepConvertEmptyArraysToString,
-    convertJsonPathToChainPath,
-    convertChainPathToJsonPath,
+    convertFromJsonPath,
+    convertToDesiredFormat,
 } from '../utils';
 interface CustomEditorType {
     ConvertToAntdTreeDataFunction: (data: any, nodeKey?: string, depth?: number) => any;
@@ -65,13 +65,10 @@ const CustomEditor = (props: IProps) => {
     useEffect(() => {
         //初始化
         if (propsData) {
-            const newRenderData = deepConvertEmptyArraysToString(editorData)
-           
-            delete newRenderData?.[rootNode].assertKeys
-              delete newRenderData?.[rootNode].specialAssertConfigs
+            const newRenderData = deepConvertEmptyArraysToString(propsData)
             setRenderData(newRenderData);
             if (isFirstRender) {
-                const newAssertKeys = convertJsonPathToChainPath((propsData[rootNode]?.['assertKeys']), rootNode)
+                const newAssertKeys = convertFromJsonPath((propsData[rootNode]?.['assertKeys']), rootNode)
                 setAssertKeys(newAssertKeys);//回显勾选项
                 setAllCheckedKeys(findAllAssertKeys(newRenderData));
                 if (isAllCheckbox) {
@@ -85,7 +82,7 @@ const CustomEditor = (props: IProps) => {
 
 
     const updateEditorData = (newData: any, patch: string, val: string | string[]) => {
-        const newSubData = updateValueByPath(newData, patch, val);
+        const newSubData = modifySubData(newData, patch, val);
         setEditorData(newSubData);
     };
 
@@ -108,7 +105,7 @@ const CustomEditor = (props: IProps) => {
     /**给数据根节点（rootNode）添加assertKeys项 */
     const addAssertKeys = (keys: string[]) => {
         if (keys.length > 0) {
-            updateEditorData(editorData, `${rootNode}.assertKeys`, convertChainPathToJsonPath(keys));
+            updateEditorData(editorData, `${rootNode}.assertKeys`, convertToDesiredFormat(keys));
         } else {
             updateEditorData(editorData, `${rootNode}.assertKeys`, []);
         }
@@ -153,7 +150,7 @@ const CustomEditor = (props: IProps) => {
         });
         const uniqueArray = Array.from(resultMap.values());
 
-        const newSubData = updateValueByPath(editorData, `${rootNode}.specialAssertConfigs`, uniqueArray);
+        const newSubData = modifySubData(editorData, `${rootNode}.specialAssertConfigs`, uniqueArray);
         setEditorData(newSubData);
     }
 
@@ -185,7 +182,7 @@ const CustomEditor = (props: IProps) => {
                     {/* 配置特殊校验 */}
                     <span style={{ display: showConfigSpecialVerif ? '' : 'none', marginLeft: 5 }}>
                         <ConfigSpecialVerif
-                            keyPath={convertChainPathToJsonPath([itemKey])?.[0]}
+                            keyPath={convertToDesiredFormat([itemKey])?.[0]}
                             value={String(el)}
                             specialAssertConfigs={editorData?.[rootNode]?.specialAssertConfigs ?? []}
                             onConfirm={(vals: any) => {
