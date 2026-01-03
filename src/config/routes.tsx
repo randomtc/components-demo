@@ -13,12 +13,13 @@ export type RouterType = {
     component?: React.LazyExoticComponent<any>
 }
 export const routers: RouterType[] = [
-    { path: '', element: <Navigate to="home" /> },
+    { path: '', element: <Navigate to="domaincase" /> },
     { path: 'home', component: lazy(() => import('@/pages/Home')) },
     { path: 'domaincase', component: lazy(() => import('@/pages/DomainCase')) },
     { path: 'componentdemo', component: lazy(() => import('@/pages/ComponentDemo')) },
     { path: 'tabledemo', component: lazy(() => import('@/pages/TableDemo')) },
     { path: 'test', component: lazy(() => import('@/pages/Test')) },
+    { path: 'draggablebutton', component: lazy(() => import('@/pages/DraggableButton')) },
     {
         path: 'test',
         children: [

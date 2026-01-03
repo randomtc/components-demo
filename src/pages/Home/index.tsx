@@ -21,6 +21,9 @@ const Home = () => {
         <Link to='/tabledemo'>
           <Button>tabledemo</Button>
         </Link>
+        <Link to='/draggablebutton'>
+          <Button>draggablebutton</Button>
+        </Link>
       </Space>
     </div>
   );
