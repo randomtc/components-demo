@@ -1,142 +1,224 @@
-import React, { useRef, useState } from 'react'
 
-let isDragging = false;
-let hasMoved = false; // 记录本次按下后是否实际移动过
+import { Button } from '@alipay/bigfish/antd'
+import { CloseOutlined, RedditCircleFilled } from '@ant-design/icons'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-const styles = {
-    btnWidth: 100,
-    btnHeight: 50,
-    divHeight: 720,
-    divWidth: 370,
-};
+interface DraggableButtonProps {
+  /** 按钮宽度（px） */
+  buttonWidth?: number;
+  /** 按钮高度（px） */
+  buttonHeight?: number;
+  /** 展开内容区域宽度（px） */
+  panelWidth?: number | (() => number);
+  /** 默认内容区域高度（px）*/
+  panelHeight?: number | (() => number);
+  content: any;
+}
 
-const DraggableButton = () => {
-    const [showDiv, setShowDiv] = useState(false);
-    const contentRef = useRef<any>(null);
+const DraggableButton: React.FC<DraggableButtonProps> = ({
+  buttonWidth = 48,
+  buttonHeight = 48,
+  panelWidth: propsPanelWidth = 500,
+  panelHeight: propsPanelHeight = 720,
+  content,
+}) => {
+  const [showPanel, setShowPanel] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-    let startX = 0;
-    let startY = 0;
-
-    const mouseMove = (e: MouseEvent) => {
-        if (isDragging && contentRef.current) {
-            const newX = e.clientX - startX;
-            const newY = e.clientY - startY;
-
-            // 只要有移动，就认为是拖拽
-            hasMoved = true;
-
-            const divWidth = contentRef.current.offsetWidth;
-            const divHeight = contentRef.current.offsetHeight;
-            const boundedX = Math.max(0, Math.min(window.innerWidth - divWidth, newX));
-            const boundedY = Math.max(0, Math.min(window.innerHeight - divHeight, newY));
-
-            contentRef.current.style.left = `${boundedX}px`;
-            contentRef.current.style.top = `${boundedY}px`;
-        }
+  // // ================== 面板宽高 ==================
+  const { panelHeight, panelWidth } = useMemo(() => {
+    const getValue = (val: number | (() => number), fallback: number) => {
+      if (typeof val === 'function') return (val as () => number)();
+      if (typeof val === 'number') return val;
+      return fallback;
     };
 
-    const mouseUp = () => {
-        isDragging = false;
-        document.removeEventListener('mousemove', mouseMove);
-        document.removeEventListener('mouseup', mouseUp);
+    return {
+      panelHeight: getValue(propsPanelHeight, 500),
+      panelWidth: getValue(propsPanelWidth, 720),
     };
+  }, [propsPanelHeight, propsPanelWidth]);
 
-    const mouseDown = (e: React.MouseEvent) => {
-        if (!contentRef.current) return;
-        isDragging = true;
-        hasMoved = false; // 每次新的按下，重置移动标记
+  // ================== 拖拽相关 ==================
+  const isDraggingRef = useRef(false);
+  const hasMovedRef = useRef(false);
+  const dragOffsetXRef = useRef(0);
+  const dragOffsetYRef = useRef(0);
+  const stopDragging = useCallback(() => {
+    isDraggingRef.current = false;
+  }, []);
 
-        const rect = contentRef.current.getBoundingClientRect();
-        startX = e.clientX - rect.left;
-        startY = e.clientY - rect.top;
+  const handleMouseMove = useCallback((event: MouseEvent) => {
+    if (!isDraggingRef.current || !containerRef.current) return;
+    const container = containerRef.current;
 
-        document.addEventListener('mousemove', mouseMove);
-        document.addEventListener('mouseup', mouseUp);
-    };
+    const newX = event.clientX - dragOffsetXRef.current;
+    const newY = event.clientY - dragOffsetYRef.current;
+    hasMovedRef.current = true;
 
-    const handleClick = (e: React.MouseEvent) => {
-        e.preventDefault();
+    const { offsetWidth, offsetHeight } = container;
 
-        // 如果这一轮按下后鼠标有拖动过，则不当成点击
-        if (hasMoved) {
-            return;
-        }
-
-        if (!contentRef.current) {
-            setShowDiv(!showDiv);
-            return;
-        }
-
-        const rect = contentRef.current.getBoundingClientRect();
-        console.log('🚀 ~ handleClick ~ rect:', rect);
-        let newTop = rect.top;
-        let newLeft = rect.left;
-
-        // 当前是收起 -> 将要展开
-        if (!showDiv) {
-            if (rect.top < styles.divHeight) {
-                newTop = 0;
-            } else {
-                newTop = rect.top - styles.divHeight;
-            }
-
-            if (rect.left < styles.divWidth) {
-                newLeft = 0;
-            } else {
-                newLeft = rect.left - styles.divWidth + styles.btnWidth;
-            }
-            contentRef.current.style.left = `${newLeft}px`;
-            contentRef.current.style.top = `${newTop}px`;
-        } else {
-            const currentRight = window.innerWidth - rect.right;
-            const currentBottom = window.innerHeight - rect.bottom;
-
-            // 折叠后，容器只有按钮大小，按钮右下角跟当前容器右下角重合，所以直接用 right/bottom 定位：
-            contentRef.current.style.right = `${currentRight}px`;
-            contentRef.current.style.bottom = `${currentBottom}px`;
-
-            // 清除 left/top，避免冲突
-            contentRef.current.style.left = 'auto';
-            contentRef.current.style.top = 'auto';
-        }
-
-        setShowDiv(!showDiv);
-    };
-
-    return (
-        <div
-            ref={contentRef}
-            style={{
-                position: 'absolute',
-                right: '0px',
-                bottom: '0px',
-                zIndex: 999,
-                border: '1px solid red',
-                textAlign: 'right',
-                height: showDiv ? styles.divHeight + styles.btnHeight : styles.btnHeight,
-                width: showDiv ? styles.divWidth : styles.btnWidth,
-            }}
-        >
-            <div
-                style={{
-                    height: styles.divHeight,
-                    width: styles.divWidth,
-                    border: '1px solid green',
-                    display: showDiv ? '' : 'none',
-                }}
-            />
-            <button
-                style={{
-                    height: styles.btnHeight,
-                    width: styles.btnWidth,
-                }}
-                onMouseDown={mouseDown}
-                onClick={handleClick}
-            >
-                移动我
-            </button>
-        </div>
+    const boundedX = Math.max(
+      0,
+      Math.min(window.innerW idth - offsetWidth, newX),
     );
+    const boundedY = Math.max(
+      0,
+      Math.min(window.innerHeight - offsetHeight, newY),
+    );
+
+    // 用 right / bottom 替代 left / top
+    const right = window.innerWidth - offsetWidth - boundedX;
+    const bottom = window.innerHeight - offsetHeight - boundedY;
+
+    container.style.right = `${right}px`;
+    container.style.bottom = `${bottom}px`;
+    container.style.left = 'auto';
+    container.style.top = 'auto';
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', stopDragging);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', stopDragging);
+    };
+  }, [handleMouseMove, stopDragging]);
+
+  const handleMouseDown = useCallback((event: React.MouseEvent) => {
+    if (!containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+
+    isDraggingRef.current = true;
+    hasMovedRef.current = false;
+
+    dragOffsetXRef.current = event.clientX - rect.left;
+    dragOffsetYRef.current = event.clientY - rect.top;
+
+    event.preventDefault();
+  }, []);
+
+  // ================== 展开 / 收起定位计算 ==================
+
+  /** 展开起时保持面板在可视区域内*/
+  const expandPanel = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+
+    let currentRight = window.innerWidth - rect.right;
+    let currentBottom = window.innerHeight - rect.bottom;
+
+    // 垂直位置：面板全部可见
+    if (rect.top < panelHeight) {
+      currentBottom = window.innerHeight - panelHeight - buttonHeight;
+    }
+
+    // 水平位置：面板全部可见
+    if (rect.left < panelWidth) {
+      currentRight = window.innerWidth - panelWidth;
+    }
+
+    container.style.right = `${currentRight}px`;
+    container.style.bottom = `${currentBottom}px`;
+    container.style.left = 'auto';
+    container.style.top = 'auto';
+  }, [panelHeight, panelWidth, buttonWidth]);
+
+  /** 收起时保持按钮位置不变*/
+  const collapsePanel = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    const currentRight = window.innerWidth - rect.right;
+    const currentBottom = window.innerHeight - rect.bottom;
+
+    container.style.right = `${currentRight}px`;
+    container.style.bottom = `${currentBottom}px`;
+    container.style.left = 'auto';
+    container.style.top = 'auto';
+  }, []);
+
+  // ================== 点击逻辑 ==================
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      event.preventDefault();
+
+      // 如果是拖拽引起的 mouseup，不触发展开/收起
+      if (hasMovedRef.current) return;
+
+      if (!showPanel) {
+        expandPanel();
+      } else {
+        collapsePanel();
+      }
+
+      setShowPanel((prev) => !prev);
+    },
+    [showPanel, expandPanel, collapsePanel],
+  );
+
+  const containerStyle = useMemo<React.CSSProperties>(
+    () => ({
+      position: 'absolute',
+      right: 20,
+      bottom: 20,
+      zIndex: 999,
+      height: showPanel ? panelHeight + buttonHeight : buttonHeight,
+      width: showPanel ? panelWidth : buttonWidth,
+    }),
+    [showPanel, panelHeight, buttonHeight, panelWidth, buttonWidth],
+  );
+
+  const panelStyle = useMemo<React.CSSProperties>(
+    () => ({
+      width: showPanel ? panelWidth : 0,
+      height: showPanel ? panelHeight : 0,
+      opacity: showPanel ? 1 : 0,
+      overflow: 'hidden',
+      transition: 'opacity 0.5s ease',
+    }),
+    [showPanel, panelWidth, panelHeight],
+  );
+
+  const buttonStyle: React.CSSProperties = {
+    height: buttonHeight,
+    width: buttonWidth,
+    cursor: 'pointer',
+  };
+
+  return (
+    <div ref={containerRef} style={containerStyle}>
+      <div style={panelStyle}>{content}</div>
+      <div style={{ textAlign: 'right' }}>
+        <Button
+          shape="circle"
+          type="primary"
+          onMouseDown={handleMouseDown}
+          onClick={handleClick}
+          icon={
+            showPanel ? (
+              <CloseOutlined />
+            ) : (
+              <RedditCircleFilled style={{ fontSize: 32 }} />
+            )
+          }
+          style={buttonStyle}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default DraggableButton;
