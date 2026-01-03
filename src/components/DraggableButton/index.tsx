@@ -1,5 +1,5 @@
 
-import { Button } from '@alipay/bigfish/antd'
+import { Button } from 'antd'
 import { CloseOutlined, RedditCircleFilled } from '@ant-design/icons'
 import React, {
   useCallback,
@@ -66,7 +66,7 @@ const DraggableButton: React.FC<DraggableButtonProps> = ({
 
     const boundedX = Math.max(
       0,
-      Math.min(window.innerW idth - offsetWidth, newX),
+      Math.min(window.innerWidth - offsetWidth, newX),
     );
     const boundedY = Math.max(
       0,

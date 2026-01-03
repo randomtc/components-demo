@@ -21,8 +21,8 @@ const Home = () => {
         <Link to='/tabledemo'>
           <Button>tabledemo</Button>
         </Link>
-        <Link to='/draggablebutton'>
-          <Button>draggablebutton</Button>
+        <Link to='/DraggableButtonDemo'>
+          <Button>DraggableButtonDemo</Button>
         </Link>
       </Space>
     </div>

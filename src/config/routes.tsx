@@ -19,7 +19,7 @@ export const routers: RouterType[] = [
     { path: 'componentdemo', component: lazy(() => import('@/pages/ComponentDemo')) },
     { path: 'tabledemo', component: lazy(() => import('@/pages/TableDemo')) },
     { path: 'test', component: lazy(() => import('@/pages/Test')) },
-    { path: 'draggablebutton', component: lazy(() => import('@/pages/DraggableButton')) },
+    { path: 'DraggableButtonDemo', component: lazy(() => import('@/pages/DraggableButtonDemo')) },
     {
         path: 'test',
         children: [
